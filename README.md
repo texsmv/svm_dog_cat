@@ -1,1 +1,1 @@
-# svm_dog_cat
+# SVM_dog_cat_classifier
