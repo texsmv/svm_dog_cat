@@ -40,7 +40,12 @@ def predict():
     out_put = clf.predict(image_t_fv)
     textBoxResult.config(state=NORMAL)
     textBoxResult.delete("1.0",END)
-    textBoxResult.insert(END,str(out_put[0]))
+    text_predict = ""
+    if(out_put[0] == 0):
+        text_predict = "gato"
+    else:
+        text_predict = "perro"
+    textBoxResult.insert(END,text_predict)
     textBoxResult.config(state=DISABLED)
 
 
@@ -55,7 +60,7 @@ label.place(x=100,y=50)
 #label.pack()
 
 #Load Button
-loadButton = tk.Button(frame,height=1, width=10,text="...",command = lambda: OpenFile(label))
+loadButton = tk.Button(frame,height=1, width=10,text="abrir imagen",command = lambda: OpenFile(label))
 loadButton.place(x=100,y=350)
 
 #Predict Button
