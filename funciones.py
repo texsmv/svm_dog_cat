@@ -48,7 +48,7 @@ def resize(mat):
 
 def wavelet(mat):
     mat = np.float32(mat)
-    m, (n, o, p) = pywt.dwt2(mat, "haar")
+    m, (n, o, p) = pywt.dwt2(mat, "shan")
     m = np.uint8(m)
     (m, n, o, p) = (np.uint8(e) for e in (m, n, o, p))
     return m, (n, o, p)
