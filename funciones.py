@@ -4,6 +4,7 @@ import cv2
 import os
 import imutils
 from sklearn.externals import joblib
+import random
 
 def extract_color_histogram(image, bins=(8, 8, 8)):
     hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
@@ -48,7 +49,7 @@ def resize(mat):
 
 def wavelet(mat):
     mat = np.float32(mat)
-    m, (n, o, p) = pywt.dwt2(mat, "shan")
+    m, (n, o, p) = pywt.dwt2(mat, "haar")
     m = np.uint8(m)
     (m, n, o, p) = (np.uint8(e) for e in (m, n, o, p))
     return m, (n, o, p)
@@ -75,10 +76,10 @@ def process_image(mat):
 
 
 def script():
-    cats_path = os.listdir("cats/")
-    dogs_path = os.listdir("dogs/")
-    cats_imgs = [cv2.imread("cats/" + cats_path[i]) for i in range(0, len(cats_path))]
-    dogs_imgs = [cv2.imread("dogs/" + dogs_path[i]) for i in range(0, len(dogs_path))]
+    cats_path = os.listdir("cats2/")
+    dogs_path = os.listdir("dogs2/")
+    cats_imgs = [cv2.imread("cats2/" + cats_path[i]) for i in range(0, len(cats_path))]
+    dogs_imgs = [cv2.imread("dogs2/" + dogs_path[i]) for i in range(0, len(dogs_path))]
     cats_imgs_haar = [process_image(e) for e in cats_imgs if e is not None]
     dogs_imgs_haar = [process_image(e) for e in dogs_imgs if e is not None]
     cats_vcs = [feature_vector_4_img(e) for e in cats_imgs_haar]
@@ -87,12 +88,19 @@ def script():
 
 
 def script2():
-    cats_path = os.listdir("test/cats/")
-    dogs_path = os.listdir("test/dogs/")
-    cats_imgs = [cv2.imread("test/cats/" + cats_path[i]) for i in range(0, len(cats_path))]
-    dogs_imgs = [cv2.imread("test/dogs/" + dogs_path[i]) for i in range(0, len(dogs_path))]
+    cats_path = os.listdir("test2/cats2/")
+    dogs_path = os.listdir("test2/dogs2/")
+    cats_imgs = [cv2.imread("test2/cats2/" + cats_path[i]) for i in range(0, len(cats_path))]
+    dogs_imgs = [cv2.imread("test2/dogs2/" + dogs_path[i]) for i in range(0, len(dogs_path))]
     cats_imgs_haar = [process_image(e) for e in cats_imgs if e is not None]
     dogs_imgs_haar = [process_image(e) for e in dogs_imgs if e is not None]
     cats_vcs = [feature_vector_4_img(e) for e in cats_imgs_haar]
     dogs_vcs = [feature_vector_4_img(e) for e in dogs_imgs_haar]
     return cats_vcs, dogs_vcs
+
+
+def shuffle(v1, v2):
+    temp = list(zip(v1, v2))
+    random.shuffle(temp)
+    v1, v2 = zip(*temp)
+    return np.array(v1), np.array(v2)

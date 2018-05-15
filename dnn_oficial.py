@@ -1,23 +1,27 @@
 import numpy as np
 from sklearn.externals import joblib
+from funciones import shuffle
+
 
 def tanh(x, deriv=False):
     if(deriv):
-        return 1/(pow(np.cosh(x),2))
+        return 1 / (pow(np.cosh(x), 2))
     return np.tanh(x)
 
+
 def sigmoidea(x, deriv=False):
-    if deriv == True:
+    if deriv:
         return x * (1 - x)
     return 1 / (1 + np.exp(-x))
 
 
 def linear(x, deriv=False):
-    if deriv == True:
+    if deriv:
         shape = np.shape(x)
         temp = x.flatten()
         temp = np.array([1 for e in temp])
         temp = temp.reshape(shape)
+
     return x
 
 
@@ -29,7 +33,7 @@ class dnn:
         self.weights = []
         self.bias = []
         self.alfa = 1
-        self.umbral = 0.0000000001
+        self.umbral = 0.0001
         self.funcs = {"sigmoidea": sigmoidea, "linear": linear, "tanh": tanh}
 
     def add_layer(self, size, activacion="linear"):
@@ -39,9 +43,9 @@ class dnn:
 
         self.weights = self.weights + [np.random.rand(len(self.layers[len(self.layers) - 2][0]), size)]
         self.activation = self.activation + [activacion]
+
     def add_input_layer(self, size):
         self.layers = self.layers + [np.array([np.empty([size, ])])]
-
 
     def imprimir(self):
         print(" ")
@@ -66,29 +70,19 @@ class dnn:
             self.layers[i] = np.dot(self.layers[i - 1], self.weights[i - 1]) + self.bias[i - 1]
             self.layers[i] = self.funcs[self.activation[i - 1]](self.layers[i])
 
-
     def forward(self, input):
         self.calcular_netas(np.array(input))
-
 
     def train(self, inputs, outputs, epocas, lr):
         self.alfa = lr
         pos = 0
-        self.forward(inputs[pos])
-        error = self.error(outputs[pos])
-        l_error = error - 1
-        self.calcular_deltas(outputs[pos])
-        self.update_weights()
-        pos = (pos + 1)
         for i in range(0, epocas):
-            print(error)
             self.forward(inputs[pos])
             self.calcular_deltas(outputs[pos])
             self.update_weights()
-            l_error = error
             error = self.error(outputs[pos])
             pos = (pos + 1) % len(inputs)
-
+            print("error: ", error)
 
     def error(self, Sd):
         error = sum(((Sd - self.layers[-1][0]) ** 2) / 2)
@@ -110,20 +104,19 @@ class dnn:
             self.weights[k - 1] += self.alfa * errores
             self.bias[k - 1] += self.alfa * self.deltas[k - 1]
 
-
-
     def test(self, inputs):
         for e in inputs:
             self.forward(e)
             print(self.layers[-1][0])
 
+
 rnn = dnn()
 rnn.add_input_layer(36)
-rnn.add_layer(15, activacion="tanh")
+rnn.add_layer(15, activacion="sigmoidea")
 rnn.add_layer(1, activacion="sigmoidea")
 
 X = joblib.load("X.pkl")
 y = joblib.load("Y.pkl")
 
-
-rnn.train(X, y, 100000, 0.000000001)
+X, y = shuffle(X, y)
+rnn.train(X, y, 1000000, 0.001)
