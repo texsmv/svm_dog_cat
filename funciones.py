@@ -30,9 +30,10 @@ def feature_vector(image):
     feature_vector = np.concatenate([feature_vector, maxs])
     feature_vector = np.concatenate([feature_vector, mins])
     means, stds = cv2.meanStdDev(image)
-    means_stds = np.concatenate([means, stds]).flatten()
-    feature_vector = np.concatenate([feature_vector, means_stds])
-    feature_vector = np.concatenate([feature_vector, extract_color_histogram(image)])
+    #means_stds = np.concatenate([means, stds]).flatten()
+    feature_vector = np.concatenate([feature_vector, means.flatten()])
+    #feature_vector = np.concatenate([feature_vector, means_stds])
+    #feature_vector = np.concatenate([feature_vector, extract_color_histogram(image)])
     return feature_vector
 
 
